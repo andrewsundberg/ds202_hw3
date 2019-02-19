@@ -1,0 +1,80 @@
+---
+title: 'Homework #3'
+author: "Andrew Sundberg; andrewsundberg"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tips at Restaurants
+
+In this homework we will use the `tips` data set. This data set is part of the `reshape2` package. You can load the data set by executing the command:
+```{r}
+data(tips, package="reshape2")
+```
+
+
+1.  How many parties did the waiter serve? Store the number in `numParty` and print. 
+```{r}
+numParty = nrow(tips)
+print(numParty)
+```
+
+
+1. What are the types of variables in the data frame `tips`? 
+```{r}
+sapply(tips, class)
+```
+
+1. Create a vector named `day` containing the day of visits in `tips`. The factor levels should be ordered from Thursday to Sunday. Also print the variable.
+```{r}
+days = tips$day
+x = factor(days,levels(days)[c(4,1:3)])
+day = sort(x,decreasing = FALSE)
+day
+```
+
+1. Create a data frame named `female5` containing the meal paid by a female payer in a  party with size greater than or euqal to 5. Also print the data frame.
+```{r}
+female5 = tips[tips$sex == 'Female' & tips$size >= 5,]
+female5
+```
+
+1. How does the tipping amount (`tip`) depend on the overall bill (`total_bill`)? Describe the relationship in words. Describe at least two types of anomalies in the plot. What do they mean? Use the `ggplot2` package to make a chart.
+```{r}
+library(ggplot2)
+ggplot(tips, aes(x = total_bill, y = tip)) + geom_point()
+```
+
+The two variables of total_bill and tip appear to have a positive linear relationship.  Meaning when the total bill goes up so does the tip
+
+
+1. Introduce a variable `tiprate` into the data set, that incorporates the rate of tips. What is the average rate for tips?
+```{r}
+tips$tiprate = tips$tip / tips$total_bill
+mean(tips$tiprate)
+```
+
+1. Make a boxplot of the tip rate by time. The x-axis should be ordered by lunch and then dinner. Use the `ggplot2` package to make a chart.
+```{r}
+a = levels(tips$time)
+time2 = factor(tips$time, levels = rev(a))
+ggplot(tips, aes(x = time2, y = tiprate)) + geom_boxplot()
+```
+
+1. How does smoking behavior and gender of the person who pays impact the  relationship between tip and total bill? Find a visualization that incorporates all four variables. Interpret the result.
+```{r}
+ggplot(tips, aes(x = smoker, y = tiprate)) + geom_boxplot() + facet_wrap(~sex)
+```
+There is one really generous male smoker. Also the female smokers are more spread out than the rest of the other groups.  All the means are right around the same value.
+
+1. Use ggplot2 to find a graphical summary of the relationship between day of the week and gender of the person paying the bill. What can you say about this relationship?
+```{r}
+ggplot(tips, aes(x = sex, fill = day)) + geom_bar()
+```
+
+
+Note: your submission is supposed to be fully reproducible, i.e. the TA and I will 'knit' your submission in RStudio. 
+
